@@ -1,0 +1,21 @@
+[api_server]
+api_token=your_api_token
+api_url_base=your_api_base_url
+days_check_min=2
+days_check_max=1
+
+[discord]
+discord_token=your_discord_token
+server=server_name
+channel=channel_name
+icon=icon_url
+messages=your messages
+         separated by
+         carriage returns !
+images=your images urls
+         separated by
+         carriage returns !
+
+[cron]
+hours=20
+minutes=15

@@ -69,21 +69,20 @@ def get_not_signed_in_users(detailed_raid, main_active_chars):
     return not_signed_in.values()
 
 
-def check_next_raid_inscriptions(time_before_next_raid, api_url_base, api_token):
+def check_next_raid_inscriptions(api_url_base, api_token, check_period, days_check_min=1, days_check_max=2):
     next_raid = get_next_raid(api_url_base, api_token)
     if next_raid is not None:
         next_raid_start_timestamp = int(next_raid.find('start_timestamp').text)
+        next_raid_start_datetime = datetime.datetime.fromtimestamp(next_raid_start_timestamp)
 
-        # Is next raid in less than 2 days?
-        if (datetime.datetime.fromtimestamp(next_raid_start_timestamp) - datetime.timedelta(days=time_before_next_raid)) < datetime.datetime.now():
+        # Is next raid in less than x days and more than y?
+        if not check_period \
+                or ((next_raid_start_datetime - datetime.timedelta(days=int(days_check_min))) < datetime.datetime.now()
+                    < (next_raid_start_datetime - datetime.timedelta(days=int(days_check_max)))):
             next_raid_id = next_raid.find('eventid').text
             det_raid = get_raid_detailed_info(next_raid_id, api_url_base, api_token)
             main_active_chars = get_main_active_chars(api_url_base, api_token)
-            return get_not_signed_in_users(det_raid, main_active_chars)
+            return {'date': next_raid_start_datetime.strftime('%d/%m/%Y'),
+                    'not_checked_in_users': get_not_signed_in_users(det_raid, main_active_chars)}
 
     return None
-
-
-at = 'ro79da0d2a0b72b0f0e7207ff97bf45a8e9a7d7990038850'
-aub = 'http://bdw-amnnenar.fr/api.php'
-check_next_raid_inscriptions(5, aub, at)
