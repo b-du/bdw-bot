@@ -57,8 +57,9 @@ class BdwBot(commands.Bot):
                     for not_checked_in_user in not_checked_in_users:
                         user = self.find_user(not_checked_in_user)
                         message += '- ' + not_checked_in_user
-                        if user is not None:
-                            message += ' (' + user.mention + ')'
+# TODO: Not working on smartphones :(
+#                        if user is not None:
+#                            message += ' (' + user.mention + ')'
                         message += '\n'
 
                     embed = discord.Embed(title='Raid du ' + next_raid_inscriptions['date'],
@@ -67,6 +68,7 @@ class BdwBot(commands.Bot):
                     embed.set_image(url=random.choice(discord_images))
                     embed.add_field(name='Non inscrits:', value=message, inline=False)
                     await channel.send(embed=embed)
+                    await channel.send('@here')
 
     async def background_task(self):
         await self.wait_until_ready()
