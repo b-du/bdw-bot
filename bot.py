@@ -56,10 +56,11 @@ class BdwBot(commands.Bot):
                     message = ''
                     for not_checked_in_user in not_checked_in_users:
                         user = self.find_user(not_checked_in_user)
+                        message += '- ' + not_checked_in_user
                         if user is not None:
-                            message += '- ' + user.mention + '\n'
-                        else:
-                            message += '- ' + not_checked_in_user + '\n'
+                            message += ' (' + user.mention + ')'
+                        message += '\n'
+
                     embed = discord.Embed(title='Raid du ' + next_raid_inscriptions['date'],
                                           description=random.choice(discord_messages), color=0x309bf3)
                     embed.set_thumbnail(url=discord_icon)
