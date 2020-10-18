@@ -6,7 +6,7 @@ For now, one instance of the bot can only be linked to one discord server, due t
 ## Functionnalities
 - Every day at a fixed hour, check inscriptions on the website. If the raid is in a fixed period, send a discord message on a fixed channel from a fixed discord server.
 - By typing `!check_next_raid` in a discord channel, check inscriptions for the next raid on the website (without checking when that raid will be) and send a discord message on a fixed channel from a fixed discord server.
-- The message will be an embeded one containing the list on not checked-in users. If a discord user is found containing the character name, he will be tagged.
+- The message will be an embeded one, containing the list of not checked-in users. If a discord user is found containing the character name, he will be tagged.
 
 ## Configuration
 All the needed constants must be in a `config.ini` file. An example is provided.
