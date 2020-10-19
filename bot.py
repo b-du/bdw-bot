@@ -41,38 +41,43 @@ class BdwBot(commands.Bot):
 
         return None
 
-    async def check_signed_in_users_for_next_raid(self, check_period):
+    async def check_signed_in_users_for_next_raid(self, force_next=False, date=None):
         guild = next((g for g in self.guilds if g.name == discord_server), None)
         if guild is not None:
             channel = next((c for c in guild.channels if c.name == discord_channel), None)
             if channel is not None:
                 next_raid_inscriptions = inscriptions.check_next_raid_inscriptions(api_url_base,
                                                                                    api_token,
-                                                                                   check_period,
+                                                                                   force_next,
                                                                                    api_days_check_min,
-                                                                                   api_days_check_max)
-                not_checked_in_users = next_raid_inscriptions['not_checked_in_users']
-                if len(not_checked_in_users) > 0:
-                    message = ''
-                    for not_checked_in_user in not_checked_in_users:
-                        user = self.find_user(not_checked_in_user)
-                        if user is not None:
-                            message += '- ' + user.mention + '\n'
-                        else:
-                            message += '- ' + not_checked_in_user + '\n'
-                    embed = discord.Embed(title='Raid du ' + next_raid_inscriptions['date'],
-                                          description=random.choice(discord_messages), color=0x309bf3)
-                    embed.set_thumbnail(url=discord_icon)
-                    embed.set_image(url=random.choice(discord_images))
-                    embed.add_field(name='Non inscrits:', value=message, inline=False)
-                    await channel.send(embed=embed)
+                                                                                   api_days_check_max,
+                                                                                   date)
+                if next_raid_inscriptions is not None:
+                    not_checked_in_users = next_raid_inscriptions['not_checked_in_users']
+                    if len(not_checked_in_users) > 0:
+                        message = ''
+                        for not_checked_in_user in not_checked_in_users:
+                            user = self.find_user(not_checked_in_user)
+                            message += '- ' + not_checked_in_user
+    # TODO: Not working on smartphones :(
+    #                        if user is not None:
+    #                            message += ' (' + user.mention + ')'
+                            message += '\n'
+
+                        embed = discord.Embed(title='Raid du ' + next_raid_inscriptions['date'],
+                                              description=random.choice(discord_messages), color=0x309bf3)
+                        embed.set_thumbnail(url=discord_icon)
+                        embed.set_image(url=random.choice(discord_images))
+                        embed.add_field(name='Non inscrits:', value=message, inline=False)
+                        await channel.send(embed=embed)
+                        await channel.send('@here')
 
     async def background_task(self):
         await self.wait_until_ready()
         while not self.is_closed():
             now = datetime.datetime.now()
             if now.hour == cron_hours and now.minute == cron_minutes:
-                await self.check_signed_in_users_for_next_raid(True)
+                await self.check_signed_in_users_for_next_raid()
             await asyncio.sleep(60)
 
 
@@ -92,7 +97,19 @@ async def on_ready():
 @bot.command()
 async def check_next_raid(context):
     await context.message.delete()
-    await bot.check_signed_in_users_for_next_raid(False)
+    await bot.check_signed_in_users_for_next_raid(force_next=True)
+
+
+@bot.command()
+async def check_raid(context, date_str):
+    if date_str is not None:
+        try:
+            date = datetime.datetime.strptime(date_str, '%d/%m/%Y').date()
+            await bot.check_signed_in_users_for_next_raid(date=date)
+        except ValueError:
+            await context.message.author.send("Erreur de commande !checkraid: la date doit être au format dd/mm/yyyy")
+
+    await context.message.delete()
 
 
 bot.run(discord_token)
