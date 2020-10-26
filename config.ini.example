@@ -3,6 +3,7 @@ api_token=your_api_token
 api_url_base=your_api_base_url
 days_check_min=2
 days_check_max=1
+site_inscription_url_pattern=http://your_site_url/index.php/Calendar/Calendarevent/{}.html?
 
 [discord]
 discord_token=your_discord_token
