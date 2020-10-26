@@ -91,6 +91,7 @@ def check_next_raid_inscriptions(api_url_base, api_token, force_next, days_check
                 det_raid = get_raid_detailed_info(next_raid_id, api_url_base, api_token)
                 main_active_chars = get_main_active_chars(api_url_base, api_token)
                 return {'date': next_raid_start_datetime.strftime('%d/%m/%Y'),
+                        'raid_id': next_raid_id,
                         'not_checked_in_users': get_not_signed_in_users(det_raid, main_active_chars)}
 
     return None

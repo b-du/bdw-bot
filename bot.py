@@ -16,6 +16,7 @@ api_url_base = config_api['api_url_base']
 api_token = config_api['api_token']
 api_days_check_min = config_api['days_check_min']
 api_days_check_max = config_api['days_check_max']
+site_inscription_url_pattern = config_api['site_inscription_url_pattern']
 discord_token = config_discord['discord_token']
 discord_server = config_discord['server']
 discord_channel = config_discord['channel']
@@ -69,6 +70,9 @@ class BdwBot(commands.Bot):
                         embed.set_thumbnail(url=discord_icon)
                         embed.set_image(url=random.choice(discord_images))
                         embed.add_field(name='Non inscrits:', value=message, inline=False)
+                        embed.add_field(name='Pour s\'inscrire:',
+                                        value='[cliquez ici](' + site_inscription_url_pattern.format(next_raid_inscriptions['raid_id']) + ')',
+                                        inline=True)
                         await channel.send(embed=embed)
                         await channel.send('@here')
 
