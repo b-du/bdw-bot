@@ -15,6 +15,7 @@ All the needed constants must be in a `config.ini` file. An example is provided.
 - `api_token`: api token from the EQDKP-Plus website (read-only api token is sufficent)
 - `api_url_base`: your website url (http://www.yourwebsite.com)
 - `days_check_min` & `days_check_max`: Period when the next raid must be checked when cron is called
+- `site_inscription_url_pattern`: url for the inscription site with a placeholder for the raid id (http://www.yourwebsite.com/index.php/Calendar/Calendarevent/{}.html?)
 ### [discord]
 - `discord_token`: the discord bot token (check https://discordpy.readthedocs.io/en/latest/discord.html for more information)
 - `server`: name of the fixed discord server
