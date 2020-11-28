@@ -55,6 +55,10 @@ class BdwBot(commands.Bot):
                                                                                    date)
                 if next_raid_inscriptions is not None:
                     not_checked_in_users = next_raid_inscriptions['not_checked_in_users']
+                    embed = discord.Embed(title='Raid du ' + next_raid_inscriptions['date'],
+                                          description=random.choice(discord_messages), color=0x309bf3)
+                    embed.set_thumbnail(url=discord_icon)
+                    embed.set_image(url=random.choice(discord_images))
                     if len(not_checked_in_users) > 0:
                         message = ''
                         for not_checked_in_user in not_checked_in_users:
@@ -65,16 +69,15 @@ class BdwBot(commands.Bot):
     #                            message += ' (' + user.mention + ')'
                             message += '\n'
 
-                        embed = discord.Embed(title='Raid du ' + next_raid_inscriptions['date'],
-                                              description=random.choice(discord_messages), color=0x309bf3)
-                        embed.set_thumbnail(url=discord_icon)
-                        embed.set_image(url=random.choice(discord_images))
                         embed.add_field(name='Non inscrits:', value=message, inline=False)
                         embed.add_field(name='Pour s\'inscrire:',
                                         value='[cliquez ici](' + site_inscription_url_pattern.format(next_raid_inscriptions['raid_id']) + ')',
                                         inline=True)
-                        await channel.send(embed=embed)
-                        await channel.send('@here')
+                    else:
+                        embed.add_field(name='C\'est la fete:', value='Tout le monde est inscrit !', inline=False)
+
+                    await channel.send(embed=embed)
+                    await channel.send('@here')
 
     async def background_task(self):
         await self.wait_until_ready()

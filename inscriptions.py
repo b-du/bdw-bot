@@ -51,11 +51,21 @@ def get_main_active_chars(api_url_base, api_token):
     if response.status_code == 200:
         main_active_chars = {}
         all_chars = etree.fromstring(response.content.decode('utf-8').replace('\n', ''))
+        inactive_mains = []
         for char in all_chars.find('players'):
-            char_id = char.find('id').text
-            main_id = char.find('main_id').text
-            if char_id == main_id and char.find('active').text == '1':
-                main_active_chars[int(char_id)] = char.find('name').text
+            char_id = int(char.find('id').text)
+            main_name = char.find('main_name').text
+            main_id = int(char.find('main_id').text)
+            if char.find('active').text == '1':
+                if main_name not in main_active_chars:
+                    main_active_chars[main_name] = []
+                main_active_chars[main_name].append(char_id)
+            elif char_id == main_id:
+                inactive_mains.append(main_name)
+
+        # Ugly trick to remove entries for inactive mains as rerolls can be active for an inactive main
+        for inactive_main in inactive_mains:
+            main_active_chars.pop(inactive_main, None)
 
         return main_active_chars
 
@@ -66,10 +76,12 @@ def get_not_signed_in_users(detailed_raid, main_active_chars):
     not_signed_in = dict(main_active_chars)
     for user in detailed_raid.find('raidstatus').iter('char'):
         user_id = int(user.find('id').text)
-        if not_signed_in.get(user_id, None) is not None:
-            del not_signed_in[user_id]
+        for main_active_char_key in main_active_chars.keys():
+            if user_id in main_active_chars[main_active_char_key]:
+                not_signed_in.pop(main_active_char_key, None)
+                break
 
-    return not_signed_in.values()
+    return not_signed_in.keys()
 
 
 def check_next_raid_inscriptions(api_url_base, api_token, force_next, days_check_min=1, days_check_max=2, date=None):
